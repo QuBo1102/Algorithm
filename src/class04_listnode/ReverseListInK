@@ -1,0 +1,86 @@
+import java.util.ArrayList;
+import java.util.List;
+
+public class ReverseListInK {
+    public static void main(String[] args) {
+        ListNode root = new ListNode(1);
+        ListNode n1 = new ListNode(2);
+        ListNode n2 = new ListNode(3);
+        ListNode n3 = new ListNode(4);
+        ListNode n4 = new ListNode(5);
+        ListNode n5 = new ListNode(6);
+        root.next = n1;
+        n1.next = n2;
+        n2.next = n3;
+        n3.next = n4;
+        n4.next = n5;
+        n5.next = n2;
+        Solution1 s = new Solution1();
+        ListNode r = new ListNode();
+        r = s.reverseKGroup(root,2);
+
+        while (r != null) {
+            System.out.println(r.val);
+            r = r.next;
+        }
+
+    }
+
+}
+
+class ListNode {
+      int val;
+      ListNode next;
+      ListNode() {}
+      ListNode(int val) { this.val = val; }
+      ListNode(int val, ListNode next) { this.val = val; this.next = next; }
+  }
+
+class Solution1 {
+    public ListNode reverseKGroup(ListNode head, int k) {
+        ListNode start = head;//令start为head
+        ListNode end = knode(start,k);
+        if (end == null) {
+            return head;
+        }
+        // 此时找出第1组要翻转的list
+        head = end;//令head为end
+        reverse(start,end);
+        //此时第1组翻转完毕 而且第1组的末尾节点还接到了end.next上
+        ListNode lastEnd = start;
+        //令上一次翻转的末尾节点 也就是上一个轮回的起始节点的值 是上一个轮回翻转后的尾部的前一个节点 上一个轮回翻转后的尾节点为下一次翻转的开始节点
+        //所以下一轮的开始节点更改为该节点的下一个节点
+
+        while (lastEnd.next != null) {
+            start = lastEnd.next;
+            end = knode(start,k);
+            if (end == null) {
+                return head;
+            }
+            reverse(start,end);
+            lastEnd.next = end;
+            lastEnd = start;
+        }
+        return head;
+    }
+    public ListNode knode (ListNode start, int k) {
+        while (--k != 0 && start != null) {
+            //k--有啥子区别
+            start = start.next;
+        }
+        return start;
+    }
+    public void reverse (ListNode start, ListNode end) {
+        end = end.next;// end移位放在翻转函数中
+        ListNode cur = start;
+        ListNode pre = null;
+        ListNode temp = null;
+        while (cur != end) {
+            temp = cur.next;
+            cur.next = pre;
+            pre = cur;
+            cur = temp;
+        }
+        start.next = end;// 翻转函数不返回值 把start和end的连接也放在这里
+    }
+}
